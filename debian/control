@@ -1,0 +1,58 @@
+Source: mpfr4
+Section: math
+Priority: optional
+Build-Depends: debhelper (>= 7), libgmp3-dev (>= 4.2.dfsg)
+Build-Depends-Indep: texinfo, texlive-latex-base
+Maintainer: Laurent Fousse <laurent@komite.net>
+Uploaders: Steve M. Robbins <smr@debian.org>, Philipp Matthias Hahn <pmhahn@debian.org>
+Homepage: http://www.mpfr.org/
+Vcs-Git: git://git.debian.org/collab-maint/mpfr.git
+Vcs-Browser: http://git.debian.org/?p=collab-maint/mpfr.git
+Standards-Version: 3.8.4
+
+Package: libmpfr4
+Section: libs
+Priority: optional
+Architecture: any
+Depends: libgmp3c2 (>= 4.2.dfsg-1), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libgmp3 (<< 4.1.4-3)
+Description: multiple precision floating-point computation
+ MPFR provides a library for multiple-precision floating-point computation
+ with correct rounding.  The computation is both efficient and has a
+ well-defined semantics. It copies the good ideas from the
+ ANSI/IEEE-754 standard for double-precision floating-point arithmetic
+ (53-bit mantissa).
+ .
+ The home page is http://www.mpfr.org/.
+
+Package: libmpfr-dev
+Section: libdevel
+Priority: optional
+Architecture: any
+Depends: libgmp3-dev (>= 4.2.dfsg-1), libmpfr4 (= ${binary:Version}), ${misc:Depends}
+Suggests: libmpfr-doc
+Conflicts: libgmp3-dev (<< 4.1.4-3)
+Replaces: libgmp3-dev (<< 4.1.4-3)
+Description: multiple precision floating-point computation developers tools
+ This development package provides the header files and the symbolic
+ links to allow compilation and linking of programs that use the libraries
+ provided in the libmpfr4 package.
+ .
+ MPFR provides a library for multiple-precision floating-point computation
+ with correct rounding.  The computation is both efficient and has a
+ well-defined semantics. It copies the good ideas from the
+ ANSI/IEEE-754 standard for double-precision floating-point arithmetic
+ (53-bit mantissa).
+ .
+ The home page is http://www.mpfr.org/.
+
+Package: libmpfr-doc
+Section: doc
+Priority: optional
+Architecture: all
+Depends: dpkg (>= 1.15.4) | install-info, ${misc:Depends}
+Description: multiple precision floating-point computation documentation
+ This package provides documentation for the multiple-precision floating-point
+ computation library MPFR.
+ .
+ The documentation is available as html and PDF.
