@@ -1,1 +1,1 @@
-usr/lib/libmpfr.so.*	usr/lib/
+usr/lib/*/libmpfr.so.*

@@ -1,3 +1,142 @@
+mpfr4 (3.1.0-5) unstable; urgency=low
+
+  * Apply upstream patch 04 through 10, missing various
+    miscomputation, freezes, and compatibility issues with
+    newer GMP version.
+
+ -- Laurent Fousse <lfousse@debian.org>  Tue, 08 May 2012 04:35:31 +0000
+
+mpfr4 (3.1.0-4) unstable; urgency=low
+
+  * Re-enable TLS on sparc now that we have binutils >= 2.22
+    (closes: #645587).
+
+ -- Laurent Fousse <lfousse@debian.org>  Sat, 03 Mar 2012 19:02:41 -0800
+
+mpfr4 (3.1.0-3) unstable; urgency=low
+
+  * Apply upstream patch01, fixing bug in MPFR_UNLIKELY.
+  * Apply upstream patch03, fixing bug in the mpfr_*printf functions
+    (closes: #648213).
+
+ -- Laurent Fousse <lfousse@debian.org>  Wed, 09 Nov 2011 20:51:05 +0100
+
+mpfr4 (3.1.0-2) unstable; urgency=low
+
+  * Disable TLS support on sparc (closes: #644552).
+    This is an ugly workaround for what is quite likely a compiler
+    optimization bug.
+
+ -- Laurent Fousse <lfousse@debian.org>  Sat, 08 Oct 2011 23:38:48 +0200
+
+mpfr4 (3.1.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Laurent Fousse <lfousse@debian.org>  Mon, 03 Oct 2011 20:34:02 +0200
+
+mpfr4 (3.1.0~rc2-1) experimental; urgency=low
+
+  * New upstream release candidate.
+
+ -- Laurent Fousse <lfousse@debian.org>  Thu, 22 Sep 2011 09:41:06 +0200
+
+mpfr4 (3.0.1-6) unstable; urgency=low
+
+  * Add Multi-Arch support, thanks Riku Voipio for the patch
+    (closes: #638958).
+
+ -- Laurent Fousse <lfousse@debian.org>  Tue, 23 Aug 2011 13:05:43 +0200
+
+mpfr4 (3.0.1-5) unstable; urgency=low
+
+  * Remove .la files (closes: #633200).
+  * Register documentation with doc-base.
+  * Misc improvements to make lintian happier.
+  * Upgraded Standards-Version to 3.9.2 (no change needed).
+
+ -- Laurent Fousse <lfousse@debian.org>  Mon, 18 Jul 2011 14:51:32 +0200
+
+mpfr4 (3.0.1-4) unstable; urgency=low
+
+  * Correct PATCHES file, thanks Vincent Lefevre (closes: #630782).
+
+ -- Laurent Fousse <lfousse@debian.org>  Tue, 28 Jun 2011 09:45:12 +0200
+
+mpfr4 (3.0.1-3) unstable; urgency=low
+
+  * Apply upstream patch "atan-expo-range" (patch03), closes: #625665
+
+ -- Laurent Fousse <lfousse@debian.org>  Thu, 05 May 2011 08:04:50 +0200
+
+mpfr4 (3.0.1-2) unstable; urgency=low
+
+  * Apply upstream rec_sqrt-carry patch (patch02).
+
+ -- Laurent Fousse <lfousse@debian.org>  Wed, 04 May 2011 14:44:56 +0200
+
+mpfr4 (3.0.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Apply upstream asin_exprange patch (patch01).
+
+ -- Laurent Fousse <lfousse@debian.org>  Thu, 28 Apr 2011 11:32:37 +0200
+
+mpfr4 (3.0.1~rc1-1) experimental; urgency=low
+
+  * New upstream release candidate.
+
+ -- Laurent Fousse <lfousse@debian.org>  Sat, 19 Mar 2011 10:33:12 +0100
+
+mpfr4 (3.0.0-9) unstable; urgency=low
+
+  * Use unversioned build-depends on libgmp-dev.
+  * Upgraded Standards-Version to 3.9.1 (no change needed).
+
+ -- Laurent Fousse <lfousse@debian.org>  Sun, 06 Mar 2011 19:56:13 +0100
+
+mpfr4 (3.0.0-8) experimental; urgency=low
+
+  * Build with libgmp10 (closes: #614499).
+  * Modify my email address.
+
+ -- Laurent Fousse <lfousse@debian.org>  Tue, 22 Feb 2011 10:02:32 +0100
+
+mpfr4 (3.0.0-7) unstable; urgency=low
+
+  * Build a -dbg package (closes: #595948).
+
+ -- Laurent Fousse <laurent@komite.net>  Mon, 21 Feb 2011 08:54:59 +0100
+
+mpfr4 (3.0.0-6) unstable; urgency=low
+
+  * Include AUTHORS file (closes: #611110).
+  * Upload to unstable.
+  * Apply upstream patch 08, fixes macro issues (closes: #602980).
+
+ -- Laurent Fousse <laurent@komite.net>  Wed, 16 Feb 2011 14:04:18 +0100
+
+mpfr4 (3.0.0-5) experimental; urgency=low
+
+  * Apply upstream patches 05 through 07:
+    + fixes tcan_round (patch05)
+    + fixes subtraction code (patch06)
+    + fixes mpfr_set_ld (patch07).
+
+ -- Laurent Fousse <laurent@komite.net>  Wed, 27 Oct 2010 19:54:55 +0200
+
+mpfr4 (3.0.0-4) experimental; urgency=low
+
+  * Apply upstream patch04 (closes: #595959).
+
+ -- Laurent Fousse <laurent@komite.net>  Tue, 07 Sep 2010 19:13:25 +0200
+
+mpfr4 (3.0.0-3) experimental; urgency=low
+
+  * Build 32 bit package on 64 bit archs (closes: #583708).
+
+ -- Laurent Fousse <laurent@komite.net>  Fri, 23 Jul 2010 14:12:11 +0200
+
 mpfr4 (3.0.0-2) unstable; urgency=low
 
   * Apply 3 upstream patches, fixing:

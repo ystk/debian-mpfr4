@@ -26,6 +26,7 @@ export DH_OPTIONS
 DEB_HOST_ARCH  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
   confflags += --build $(DEB_HOST_GNU_TYPE)
@@ -40,7 +41,7 @@ ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 CFLAGS += -O0
 else
     ifeq (m68k,$(DEB_HOST_ARCH))
-    	CFLAGS += -O0
+	CFLAGS += -O0
     else
 	CFLAGS += -O3
     endif
@@ -48,6 +49,16 @@ endif
 
 ifeq (sh4,$(DEB_HOST_ARCH))
     CFLAGS += -mieee
+endif
+
+# Re-enable TLS on sparc.
+# ifeq (sparc,$(DEB_HOST_ARCH))
+#     confflags += --disable-thread-safe
+# endif
+
+ifneq (,$(findstring $(DEB_HOST_ARCH), amd64 ppc64 kfreebsd-amd64))
+  EXTRA_INSTALL=install32
+  m32=-m32
 endif
 
 build-doc: configure-stamp
@@ -61,8 +72,27 @@ configure-stamp:
 	chmod +x configure
 	cd build && \
 	    ../configure $(confflags) --prefix=/usr \
-		--enable-shared
+		--enable-shared --libdir=/usr/lib/$(DEB_HOST_MULTIARCH)
 	touch configure-stamp
+
+configure32: configure32-stamp
+configure32-stamp:
+	mkdir -p build32
+	cd build32 && \
+	    CC="gcc -m32" CXX="g++ -m32" ../configure $(confflags32) --prefix=/usr \
+	    --enable-shared --libdir=/usr/lib32 ABI=32 
+	touch $@
+
+build32-stamp: configure32-stamp
+	dh_testdir
+	$(MAKE) $(NJOBS) -C build32
+
+ifeq ($(with_check),yes)
+  ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	GMP_CHECK_RANDOMIZE=1 $(MAKE) -C build32 check
+  endif
+endif
+	touch $@
 
 build-stamp: configure-stamp
 	dh_testdir
@@ -97,15 +127,17 @@ ifeq ($(with_check),yes)
 endif
 	touch build64-stamp
 
-build: build-stamp
+build-indep: build-stamp
+build-arch: build-stamp
 # not yet ready for that: $(if $(filter powerpc,$(DEB_HOST_ARCH)), build64-stamp)
+build: build-indep build-arch
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f *-stamp
 
-	rm -rf build build64
+	rm -rf build build64 build32
 
 	dh_clean
 
@@ -124,10 +156,18 @@ install: build
 #	mv debian/tmp64/usr/lib debian/tmp/usr/lib64
 #endif
 	# Miscellaneous install.
-	dh_install -s -i --sourcedir=debian/tmp
+	dh_install -i
+	dh_install -plibmpfr4
+	dh_install -plibmpfr-dev
 
-	dh_makeshlibs -v -plibmpfr4
-	dh_makeshlibs -v -plib64mpfr4
+	dh_makeshlibs -v -V -plibmpfr4
+	dh_makeshlibs -v -V -plib64mpfr4
+
+install32: build32-stamp
+	$(MAKE) DESTDIR=`pwd`/debian/tmp -C build32 install
+	dh_install -plib32mpfr4
+	dh_install -plib32mpfr-dev
+	dh_makeshlibs -v -V -plib32mpfr4
 
 # This single target is used to build all the packages, all at once, or
 # one at a time. So keep in mind: any options passed to commands here will
@@ -137,27 +177,14 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs ChangeLog
-	dh_installdocs BUGS NEWS README TODO
+	dh_installdocs -A BUGS NEWS README TODO AUTHORS
 	dh_installexamples
 	dh_installmenu
-#	dh_installdebconf
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installcatalogs
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installman
-#	dh_installcron
 	dh_installinfo
-#	dh_undocumented
-	dh_strip
+	dh_strip --dbg-package=libmpfr4-dbg
 	dh_link
 	dh_compress
 	dh_fixperms
-#	dh_perl
-#	dh_python
-#	dh_makeshlibs
 	dh_lintian
 	dh_installdeb
 	dh_shlibdeps
@@ -171,7 +198,7 @@ binary-indep: build build-doc install
 	 $(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture dependant packages using the common target.
-binary-arch: build install
+binary-arch: build install $(EXTRA_INSTALL)
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-common
 
 # Any other binary targets build just one binary package at a time.
@@ -179,4 +206,4 @@ binary-%: build install
 	make -f debian/rules binary-common DH_OPTIONS=-p$*
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary-common binary install
+.PHONY: build clean binary-indep binary-arch binary-common binary install build-arch build-indep
