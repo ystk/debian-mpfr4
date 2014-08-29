@@ -38,17 +38,17 @@ export CFLAGS = -g
 export LDFLAGS = -Wl,-z,defs
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-CFLAGS += -O0
+  CFLAGS += -O0
 else
-    ifeq (m68k,$(DEB_HOST_ARCH))
-	CFLAGS += -O0
+  ifeq (m68k,$(DEB_HOST_ARCH))
+    CFLAGS += -O0
+  else
+    ifeq (sh4,$(DEB_HOST_ARCH))
+      CFLAGS += -O1 -mieee
     else
-	CFLAGS += -O3
+      CFLAGS += -O3
     endif
-endif
-
-ifeq (sh4,$(DEB_HOST_ARCH))
-    CFLAGS += -mieee
+  endif
 endif
 
 # Re-enable TLS on sparc.
@@ -56,16 +56,15 @@ endif
 #     confflags += --disable-thread-safe
 # endif
 
-ifneq (,$(findstring $(DEB_HOST_ARCH), amd64 ppc64 kfreebsd-amd64))
-  EXTRA_INSTALL=install32
-  m32=-m32
-endif
-
 build-doc: configure-stamp
 	$(MAKE) -C build pdf info html
 
+autoreconf-stamp:
+	dh_autoreconf
+	touch $@
+
 configure: configure-stamp
-configure-stamp:
+configure-stamp: autoreconf-stamp
 	dh_testdir
 	rm -rf build
 	mkdir -p build
@@ -74,25 +73,6 @@ configure-stamp:
 	    ../configure $(confflags) --prefix=/usr \
 		--enable-shared --libdir=/usr/lib/$(DEB_HOST_MULTIARCH)
 	touch configure-stamp
-
-configure32: configure32-stamp
-configure32-stamp:
-	mkdir -p build32
-	cd build32 && \
-	    CC="gcc -m32" CXX="g++ -m32" ../configure $(confflags32) --prefix=/usr \
-	    --enable-shared --libdir=/usr/lib32 ABI=32 
-	touch $@
-
-build32-stamp: configure32-stamp
-	dh_testdir
-	$(MAKE) $(NJOBS) -C build32
-
-ifeq ($(with_check),yes)
-  ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
-	GMP_CHECK_RANDOMIZE=1 $(MAKE) -C build32 check
-  endif
-endif
-	touch $@
 
 build-stamp: configure-stamp
 	dh_testdir
@@ -105,39 +85,18 @@ ifeq ($(with_check),yes)
 endif
 	touch build-stamp
 
-configure64: configure64-stamp
-configure64-stamp:
-	dh_testdir
-	rm -rf build64
-	mkdir -p build64
-	chmod +x configure
-	cd build64 && \
-	    CC="gcc -m64" CXX="g++ -m64" ../configure $(confflags) --prefix=/usr \
-		--enable-shared powerpc64-linux-gnu
-	touch configure64-stamp
-
-build64-stamp: configure64-stamp
-	dh_testdir
-	$(MAKE) $(NJOBS) -C build64
-
-ifeq ($(with_check),yes)
-  ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
-	GMP_CHECK_RANDOMIZE=1 $(MAKE) -C build64 check
-  endif
-endif
-	touch build64-stamp
-
 build-indep: build-stamp
 build-arch: build-stamp
-# not yet ready for that: $(if $(filter powerpc,$(DEB_HOST_ARCH)), build64-stamp)
 build: build-indep build-arch
 
 clean:
+	dh_autoreconf_clean
+	rm -f autoreconf-stamp
 	dh_testdir
 	dh_testroot
 	rm -f *-stamp
 
-	rm -rf build build64 build32
+	rm -rf build
 
 	dh_clean
 
@@ -151,23 +110,12 @@ install: build
 
 	$(MAKE) -C build DESTDIR=`pwd`/debian/tmp install
 
-#ifeq (powerpc,$(DEB_HOST_ARCH))
-#	$(MAKE) -C build64 DESTDIR=`pwd`/debian/tmp64 install
-#	mv debian/tmp64/usr/lib debian/tmp/usr/lib64
-#endif
 	# Miscellaneous install.
 	dh_install -i
 	dh_install -plibmpfr4
 	dh_install -plibmpfr-dev
 
 	dh_makeshlibs -v -V -plibmpfr4
-	dh_makeshlibs -v -V -plib64mpfr4
-
-install32: build32-stamp
-	$(MAKE) DESTDIR=`pwd`/debian/tmp -C build32 install
-	dh_install -plib32mpfr4
-	dh_install -plib32mpfr-dev
-	dh_makeshlibs -v -V -plib32mpfr4
 
 # This single target is used to build all the packages, all at once, or
 # one at a time. So keep in mind: any options passed to commands here will

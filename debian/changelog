@@ -1,6 +1,27 @@
+mpfr4 (3.1.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Apply upstream's patches 01 through 03 (closes: #726268).
+  * Use -O1 for sh4 (closes: #726602).
+
+ -- Laurent Fousse <lfousse@debian.org>  Sun, 20 Oct 2013 21:37:43 -0700
+
+mpfr4 (3.1.1-2) unstable; urgency=low
+
+  * Remove lib32mpfr{4,-dev} packages.  Closes: #718094.
+
+ -- Steve M. Robbins <smr@debian.org>  Sun, 18 Aug 2013 22:24:02 -0500
+
+mpfr4 (3.1.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Use dh-autoreconf, as suggested by Colin Watson (closes: #700065).
+
+ -- Laurent Fousse <lfousse@debian.org>  Mon, 18 Feb 2013 18:20:45 -0800
+
 mpfr4 (3.1.0-5) unstable; urgency=low
 
-  * Apply upstream patch 04 through 10, missing various
+  * Apply upstream patch 04 through 10, fixing various
     miscomputation, freezes, and compatibility issues with
     newer GMP version.
 
