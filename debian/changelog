@@ -1,3 +1,12 @@
+mpfr4 (3.1.2-2) unstable; urgency=medium
+
+  * QA upload, properly orphan the package. See #771884.
+  * Bump standards version to 3.9.6, fix lintian warnings.
+  * Build using dpkg-buildflags.
+  * Fix buffer overflow in mpfr_strtofr. Closes: #772008.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 11 Dec 2014 12:32:33 +0100
+
 mpfr4 (3.1.2-1) unstable; urgency=low
 
   * New upstream release.

@@ -1,3 +1,4 @@
 0001-Apply-upstream-s-patch-exp_2.patch
 0002-Apply-upstream-s-patch-fits-smallneg.patch
 0003-Apply-upstream-s-patch-clang-divby0.patch
+fix-buffer-overflow.diff

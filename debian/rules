@@ -34,21 +34,18 @@ else
   confflags += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
 endif
 
-export CFLAGS = -g
-export LDFLAGS = -Wl,-z,defs
+CPPFLAGS := $(shell dpkg-buildflags --get CPPFLAGS)
+CFLAGS := -g $(shell dpkg-buildflags --get CFLAGS)
+CXXFLAGS := -g $(shell dpkg-buildflags --get CXXFLAGS)
+LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,-z,defs
 
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+ifeq (m68k,$(DEB_HOST_ARCH))
   CFLAGS += -O0
+else ifeq (sh4,$(DEB_HOST_ARCH))
+  CFLAGS += -mieee
 else
-  ifeq (m68k,$(DEB_HOST_ARCH))
-    CFLAGS += -O0
-  else
-    ifeq (sh4,$(DEB_HOST_ARCH))
-      CFLAGS += -O1 -mieee
-    else
-      CFLAGS += -O3
-    endif
-  endif
+  CFLAGS := $(subst -O2,-O3,$(CFLAGS))
+  CXXFLAGS := $(subst -O2,-O3,$(CXXFLAGS))
 endif
 
 # Re-enable TLS on sparc.
@@ -70,8 +67,14 @@ configure-stamp: autoreconf-stamp
 	mkdir -p build
 	chmod +x configure
 	cd build && \
-	    ../configure $(confflags) --prefix=/usr \
-		--enable-shared --libdir=/usr/lib/$(DEB_HOST_MULTIARCH)
+	    ../configure $(confflags) \
+		--prefix=/usr \
+		--enable-shared \
+		--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
+		CPPFLAGS="$(CPPFLAGS)" \
+		CFLAGS="$(CFLAGS)" \
+		CXXFLAGS="$(CXXFLAGS)" \
+		LDFLAGS="$(LDFLAGS)"
 	touch configure-stamp
 
 build-stamp: configure-stamp
